@@ -1,0 +1,40 @@
+<html>
+ <body>
+  <center>
+<h1> PREDICTION </h1>
+   <br>
+   <br>
+   <br>
+   {%if data==0%}
+   <h2> Nothing in Hand </h2>
+   <p>-good luck-</p>
+   {%elif data==1%}
+   <h2>One Pair</h2>
+   {%elif data==2%}
+   <h2>Two Pairs</h2>
+   {%elif data==3%}
+   <h2>Three of a Kind</h2>
+   {%elif data==4%}
+   <h2>Straight</h2>
+   {%elif data==5%}
+   <h2>Flush</h2>
+   {%elif data==6%}
+   <h2>Full House</h2>
+   {%elif data==7%}
+   <h2>Four of a Kind</h2>
+   {%elif data==8%}
+   <h2>Straight Flush</h2>
+   {%elif data==9%}
+   <h2>Royal Flush</h2>
+    {{pred}}
+   {%else%}
+   <h2> Something Unusual </h2>
+   <br>
+   <br>
+   <br>
+{%endif%}
+   <h6> Thank You </h6>
+  </center>
+ </body>
+ 
+</html>
