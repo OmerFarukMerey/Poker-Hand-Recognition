@@ -61,7 +61,8 @@ def preprocess_data(data):
     return df
 
 # Loading the Models
-model = pickle.load(open('cat_boost.pkl', 'rb'))
+cat_boost_model = pickle.load(open('cat_boost.pkl', 'rb'))
+nn_model = pickle.load(open('nn.pk', 'rb'))
 
 # Instantiate app object 
 app = Flask(__name__)
@@ -71,22 +72,45 @@ def man():
  return render_template('home.html')
 @app.route('/predict', methods=['POST'])
 def home():
- feature1 = int(request.form['a'])
- feature2 = int(request.form['b'])
- feature3 = int(request.form['c'])
- feature4 = int(request.form['d'])
- feature5 = int(request.form['e'])
- feature6 = int(request.form['f'])
- feature7 = int(request.form['g'])
- feature8 = int(request.form['h'])
- feature9 = int(request.form['i'])
- feature10 = int(request.form['j'])
- arr = np.array([[feature1, feature2, feature3, feature4, feature5, feature6, feature7, feature8, feature9, feature10]])
- df = pd.DataFrame(arr, columns = ["S1", "C1", "S2", "C2", "S3", "C3", "S4", "C4", "S5", "C5"])
- df = preprocess_data(df)
+    feature1 = int(request.form['a'])
+    feature2 = int(request.form['b'])
+    feature3 = int(request.form['c'])
+    feature4 = int(request.form['d'])
+    feature5 = int(request.form['e'])
+    feature6 = int(request.form['f'])
+    feature7 = int(request.form['g'])
+    feature8 = int(request.form['h'])
+    feature9 = int(request.form['i'])
+    feature10 = int(request.form['j'])
+    arr = np.array([[feature1, feature2, feature3, feature4, feature5, feature6, feature7, feature8, feature9, feature10]])
+    df = pd.DataFrame(arr, columns = ["S1", "C1", "S2", "C2", "S3", "C3", "S4", "C4", "S5", "C5"])
+    df = preprocess_data(df)
 
- pred = model.predict(arr)
- return render_template('output.html', data=pred)
+    cat_boost_pred = cat_boost_model.predict(data = df)[0][0]
+    nn_pred = nn_model.predict(df)[0]
+    
+    #VOTING
+    pred = 0
+    
+    votes = [cat_boost_pred, nn_pred, nn_pred]
+    agreements = [1, 1, 1]
+    for i in range(len(votes)):
+        for j in range(len(votes)):
+            if(i == j):
+                continue
+            if(votes[i] == votes[j]):
+                agreements[i] += 1
+    if(agreements[0] == 3): #All models agreed
+        pred = votes[0]
+    elif(agreements[0] == 2): #Two model agreed and 0. model is majority
+        pred = votes[0]
+    elif(agreements[1] == 2): #Two model agreed and 1. model is majority
+        pred = votes[1]
+    else:   #Disagreement
+        pred = votes[0]
+    
+    return render_template('output.html', data=pred)
+    
 # Flask server
 if __name__=="__main__":
  app.run(debug=True)
