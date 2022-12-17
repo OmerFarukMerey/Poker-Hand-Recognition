@@ -62,7 +62,8 @@ def preprocess_data(data):
 
 # Loading the Models
 cat_boost_model = pickle.load(open('cat_boost.pkl', 'rb'))
-nn_model = pickle.load(open('nn.pk', 'rb'))
+nn_model = pickle.load(open('nn.pkl', 'rb'))
+rf_model = pickle.load(open('rf.pkl', 'rb'))
 
 # Instantiate app object 
 app = Flask(__name__)
@@ -88,11 +89,13 @@ def home():
 
     cat_boost_pred = cat_boost_model.predict(data = df)[0][0]
     nn_pred = nn_model.predict(df)[0]
+    rf_pred = rf_model.predict(df)[0]
     
     #VOTING
     pred = 0
     
     votes = [cat_boost_pred, nn_pred, nn_pred]
+    #votes = [nn_pred, nn_pred, nn_pred]
     agreements = [1, 1, 1]
     for i in range(len(votes)):
         for j in range(len(votes)):
@@ -106,7 +109,7 @@ def home():
         pred = votes[0]
     elif(agreements[1] == 2): #Two model agreed and 1. model is majority
         pred = votes[1]
-    else:   #Disagreement
+    else:   #Disagreement Catboost rules!
         pred = votes[0]
     
     return render_template('output.html', data=pred)
