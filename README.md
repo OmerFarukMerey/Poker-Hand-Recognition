@@ -1,3 +1,5 @@
+Deployed site of our project: https://omerfarukmerey-poker-hand-recognition-app-4kmo2k.streamlit.app/
+
 # Poker-Hand-Recognition
 
 ### Creators of the Poker Hand Data Set
